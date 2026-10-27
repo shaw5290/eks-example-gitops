@@ -1,22 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-canary
+  name: nginx
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: nginx
-      track: canary
   template:
     metadata:
       labels:
-        app: nginx          # Service 按 app 选中稳定版和灰度版全部 Pod
-        track: canary       # DestinationRule 按 track 区分子集
+        app: nginx
     spec:
       containers:
         - name: nginx
-          image: canary-image   # 占位名，由 kustomization.yaml 的 images 替换为 ECR 地址和 Tag
+          # Tag 由 kustomization.yaml 的 images 覆盖
+          image: 011934825212.dkr.ecr.cn-north-1.amazonaws.com.cn/nginx
           ports:
             - containerPort: 80
           resources:

@@ -1,0 +1,32 @@
+# K8s Gateway API 网关：Istio 根据该资源自动创建网关 Deployment 和 LoadBalancer Service
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: istio-ingress
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: edge-gateway
+  namespace: istio-ingress
+spec:
+  gatewayClassName: istio
+  infrastructure:
+    annotations:
+      # 集群关闭 Auto Mode，通过注解创建公网 NLB
+      service.beta.kubernetes.io/aws-load-balancer-type: nlb
+      service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+  listeners:
+    - name: http
+      port: 80
+      protocol: HTTP
+      allowedRoutes:
+        namespaces:
+          from: All     # 各业务命名空间的 HTTPRoute 都可以挂到该网关
+    # 中国区未 ICP 备案时 80/443/8080 被封锁，临时使用 8000，备案后删除
+    - name: http-temp
+      port: 8000
+      protocol: HTTP
+      allowedRoutes:
+        namespaces:
+          from: All

@@ -1,0 +1,23 @@
+# 南北向路由：/nginx/** 转发到 nginx 服务，并去掉路径前缀
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: nginx
+spec:
+  parentRefs:
+    - name: edge-gateway
+      namespace: istio-ingress
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /nginx/
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /
+      backendRefs:
+        - name: nginx
+          port: 80
