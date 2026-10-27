@@ -1,0 +1,13 @@
+# Flux 同步入口：每分钟拉取 GitOps 仓库的 ./apps/demo 并应用到集群
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: demo
+  namespace: flux-system
+spec:
+  interval: 1m
+  path: ./apps/demo
+  prune: true           # 仓库里删除的资源，集群里同步删除
+  sourceRef:
+    kind: GitRepository
+    name: flux-system

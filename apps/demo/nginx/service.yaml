@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+spec:
+  selector:
+    app: nginx
+  ports:
+    - name: http        # 端口名以 http 开头，Istio 才能识别协议
+      port: 80
+      targetPort: 80
+  type: ClusterIP       # 不直接暴露公网，统一走 Istio 网关

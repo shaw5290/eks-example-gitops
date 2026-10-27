@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: demo
+resources:
+  - deployment-stable.yaml
+  - deployment-canary.yaml
+  - service.yaml
+  - destinationrule.yaml
+  - virtualservice.yaml
+
+# 稳定版和灰度版用不同的镜像占位名，分别控制 Tag
+# CI 只改 canary-image；转正时把 stable-image 改成和 canary-image 相同的 Tag
+images:
+  - name: stable-image
+    newName: 011934825212.dkr.ecr.cn-north-1.amazonaws.com.cn/nginx
+    newTag: "1.14.2"
+  - name: canary-image
+    newName: 011934825212.dkr.ecr.cn-north-1.amazonaws.com.cn/nginx
+    newTag: "1.27.5"
