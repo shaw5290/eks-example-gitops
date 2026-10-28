@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vue-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vue-demo
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0     # 滚动更新时先起新 Pod，再停旧 Pod，页面不中断
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: vue-demo
+    spec:
+      containers:
+        - name: vue-demo
+          # Tag 由 kustomization.yaml 的 images 覆盖
+          image: 011934825212.dkr.ecr.cn-north-1.amazonaws.com.cn/vue-demo
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            initialDelaySeconds: 3
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
