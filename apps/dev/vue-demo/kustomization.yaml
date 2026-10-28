@@ -7,4 +7,4 @@ resources:
   - httproute.yaml
 images:
   - name: 011934825212.dkr.ecr.cn-north-1.amazonaws.com.cn/vue-demo
-    newTag: "3904d7d"     # 发布时修改（CI 自动改为 commit 短哈希）
+    newTag: "0003c0a"     # 发布时修改（CI 自动改为 commit 短哈希）
