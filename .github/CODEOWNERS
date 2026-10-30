@@ -1,0 +1,7 @@
+# test / prod 环境的变更必须由以下负责人审批（配合 main 分支规则集的 Require review from Code Owners）
+/apps/test/            @shaw5290
+/infrastructure/test/  @shaw5290
+/clusters/test/        @shaw5290
+/apps/prod/            @shaw5290
+/infrastructure/prod/  @shaw5290
+/clusters/prod/        @shaw5290

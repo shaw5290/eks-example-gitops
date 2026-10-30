@@ -1,0 +1,15 @@
+# 应用：每分钟拉取 ./apps/prod，基础设施同步成功后再部署
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps
+  namespace: flux-system
+spec:
+  interval: 1m
+  path: ./apps/prod
+  prune: true           # 仓库里删除的资源，集群里同步删除
+  dependsOn:
+    - name: infrastructure
+  sourceRef:
+    kind: GitRepository
+    name: flux-system

@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: app-core
+resources:
+  - ../../base/nginx
+replicas:
+  - name: nginx
+    count: 2
+images:
+  - name: 011934825212.dkr.ecr.cn-north-1.amazonaws.com.cn/nginx
+    newTag: "1.14.2"    # 由 promote workflow 修改

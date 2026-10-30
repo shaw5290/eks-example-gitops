@@ -1,0 +1,8 @@
+# 各环境共用的清单；镜像 Tag、副本数等差异放在 apps/<env>/ 下
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: app-core
+resources:
+  - deployment.yaml
+  - service.yaml
+  - httproute.yaml

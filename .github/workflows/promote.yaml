@@ -1,0 +1,58 @@
+# 晋升：把上一个环境的镜像 Tag 写入目标环境（dev → test → prod），自动开 PR，审批合并后由目标集群的 Flux 部署
+name: promote
+
+on:
+  workflow_dispatch:
+    inputs:
+      service:
+        description: 服务名（apps/<env>/ 下的目录名）
+        required: true
+      target:
+        description: 目标环境（test 从 dev 晋升，prod 从 test 晋升）
+        type: choice
+        options: [test, prod]
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  promote:
+    # 只修改 Git，不访问集群和 ECR，使用 GitHub 托管的 Runner
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Open promotion PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SERVICE: ${{ inputs.service }}
+          TARGET: ${{ inputs.target }}
+        run: |
+          case "$TARGET" in
+            test) SOURCE=dev ;;
+            prod) SOURCE=test ;;
+          esac
+          SRC=apps/$SOURCE/$SERVICE/kustomization.yaml
+          DST=apps/$TARGET/$SERVICE/kustomization.yaml
+          test -f "$SRC" || { echo "$SRC 不存在"; exit 1; }
+          test -f "$DST" || { echo "$DST 不存在，先新增该环境的服务目录"; exit 1; }
+
+          TAG=$(awk '/newTag:/ {gsub(/"/, "", $2); print $2; exit}' "$SRC")
+          echo "$SOURCE 当前 Tag：$TAG"
+          sed -i "s|newTag: .*|newTag: \"$TAG\"     # 由 promote workflow 修改|" "$DST"
+          if git diff --quiet; then
+            echo "$TARGET 已是 $TAG，无需晋升"; exit 0
+          fi
+
+          BRANCH=promote/$SERVICE-$TARGET-$TAG
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git commit -am "promote $SERVICE:$TAG to $TARGET"
+          git push origin "$BRANCH"
+          gh pr create --base main --head "$BRANCH" \
+            --title "promote $SERVICE:$TAG to $TARGET" \
+            --body "将 \`$SERVICE\` 从 $SOURCE 晋升到 $TARGET，镜像 Tag \`$TAG\`。合并后 $TARGET 集群的 Flux 在 1 分钟内自动部署。"

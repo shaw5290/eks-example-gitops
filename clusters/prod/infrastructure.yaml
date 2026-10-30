@@ -1,0 +1,13 @@
+# 基础设施：Gateway API 网关（依赖 Istio 和 Gateway API CRD 已安装）
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: infrastructure
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./infrastructure/prod
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
