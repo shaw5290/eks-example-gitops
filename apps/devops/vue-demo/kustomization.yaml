@@ -8,4 +8,4 @@ replicas:
     count: 2
 images:
   - name: 011934825212.dkr.ecr.cn-north-1.amazonaws.com.cn/vue-demo
-    newTag: "33a2741"     # 发布时修改（CI 自动改为 commit 短哈希）
+    newTag: "80b21f7"     # 发布时修改（CI 自动改为 commit 短哈希）
