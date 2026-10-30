@@ -8,4 +8,4 @@ replicas:
     count: 2
 images:
   - name: 011934825212.dkr.ecr.cn-north-1.amazonaws.com.cn/nginx
-    newTag: "1.14.2"    # 手动修改（演示、实验用），Flux 自动滚动更新
+    newTag: "1.27.5"    # 手动修改（演示、实验用），Flux 自动滚动更新
